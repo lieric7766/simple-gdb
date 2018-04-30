@@ -6,7 +6,14 @@ class pnext(gdb.Command):
 
     def invoke(self, args, from_tty):
         argv = gdb.string_to_argv(args)
-        point = gdb.parse_and_eval(argv[0])
+        
+        try:
+            variable = gdb.parse_and_eval(argv[0])
+        except gdb.error as e:
+            print(e)
+            return
+
+        point = variable
 
         if len(argv) > 3:
             raise gdb.GdbError('Usage: pnext [head] [next] [length]')
@@ -17,10 +24,10 @@ class pnext(gdb.Command):
             try:
                 check = point[next_p].dereference()
             except gdb.error as e:
-                print("Oops!  ", e)
+                print("Oops! ", e)
                 return
 
-        count = 0
+        count = 50
         if len(argv) > 2:
             try:
                 count = int(argv[2])
